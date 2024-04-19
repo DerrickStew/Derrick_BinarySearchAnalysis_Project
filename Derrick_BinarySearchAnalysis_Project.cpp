@@ -1,45 +1,48 @@
 #include <iostream>
 #include <vector>
 #include <random>
+#include <chrono>
 
 using namespace std;
+using namespace std::chrono;
 
-// recursive binary search
-int recursiveBinarySearch(const vector<int>& arr, int target, int low, int high)
-{
-    if (low <= high)
-    {
-        int mid = low + (high - low) / 2;
-
-        if (arr[mid] == target)
-            return mid; //target found
-        else if (arr[mid] < target)
-            return recursiveBinarySearch(arr, target, mid + 1, high);
-        else
-            return recursiveBinarySearch(arr, target, low, mid - 1);
+// Recursive binary search function
+int recursiveBinarySearch(const vector<int>& arr, int target, int low, int high) {
+    if (low > high) {
+        return -1; // Base case: target not found
     }
-    else
-        return -1; // target not found
+
+    int mid = low + (high - low) / 2;
+
+    if (arr[mid] == target) {
+        return mid; // Base case: target found at mid
+    }
+    else if (arr[mid] < target) {
+        return recursiveBinarySearch(arr, target, mid + 1, high); // Search in the right half
+    }
+    else {
+        return recursiveBinarySearch(arr, target, low, mid - 1); // Search in the left half
+    }
 }
 
-
-// iterative binary search
-int iterativeBinarySearch(const vector<int>& arr, int target)
-{
+// Iterative binary search function
+int iterativeBinarySearch(const vector<int>& arr, int target) {
     int low = 0;
     int high = arr.size() - 1;
 
-    while (low <= high)
-    {
+    while (low <= high) {
         int mid = low + (high - low) / 2;
-        if (arr[mid] == target)
-            return mid; //target found
-        else if (arr[mid] < target)
+        if (arr[mid] == target) {
+            return mid; // Target found
+        }
+        else if (arr[mid] < target) {
             low = mid + 1;
-        else
+        }
+        else {
             high = mid - 1;
+        }
     }
-    return -1; //target not found
+    return -1; // Target not found
 }
 
 // Sequential search function
@@ -53,46 +56,48 @@ int sequentialSearch(const vector<int>& arr, int target) {
 }
 
 int main() {
-    mt19937 mt{ random_device{}() };
-    uniform_int_distribution<int> dist{ 1, 100 };
+    const int N = 200000;
+    double SumRBS = 0.;
+    double SumIBS = 0.;
+    double SumSeqS = 0.;
 
-    // Fill vector
-    vector<int> arr(9);
-    for (int i = 0; i < 9; ++i)
-        arr[i] = dist(mt);
+    for (int run = 1; run <= 10; ++run) {
+        mt19937 mt{ random_device{}() };
+        uniform_int_distribution<int> dist{ 1, 100 };
 
-    // Display vector
-    cout << "VECTOR: ";
-    for (int i : arr)
-        cout << i << " ";
-    cout << endl << "\n";
+        // Fill vector
+        vector<int> arr(N);
+        for (int i = 0; i < N; ++i)
+            arr[i] = dist(mt);
 
-    // Generate target value within the range of vector elements
-    int target1 = arr[dist(mt) % arr.size()];
+        // Generate random target value
+        int target1 = arr[dist(mt) % N];
 
-    // Test recursive binary search
-    int index1 = recursiveBinarySearch(arr, target1, 0, arr.size() - 1);
-    cout << "RECURSIVE BINARY SEARCH" << endl;
-    if (index1 >= 0)
-        cout << "Target " << target1 << " was found at location " << index1 << endl;
-    else
-        cout << "Target " << target1 << " was not found, return value is " << index1 << endl << "\n";
+        // Measure time for recursive binary search
+        auto start = high_resolution_clock::now();
+        recursiveBinarySearch(arr, target1, 0, arr.size() - 1);
+        auto end = high_resolution_clock::now();
+        auto duration = duration_cast<microseconds>(end - start);
+        SumRBS += static_cast<double>(duration.count());
 
-    // Test iterative binary search
-    int index2 = iterativeBinarySearch(arr, target1);
-    cout << "ITERATIVE BINARY SEARCH" << endl;
-    if (index2 >= 0)
-        cout << "Target " << target1 << " was found at location " << index2 << endl;
-    else
-        cout << "Target " << target1 << " was not found, return value is " << index2 << endl << "\n";
+        // Measure time for iterative binary search
+        start = high_resolution_clock::now();
+        iterativeBinarySearch(arr, target1);
+        end = high_resolution_clock::now();
+        duration = duration_cast<microseconds>(end - start);
+        SumIBS += static_cast<double>(duration.count());
 
-    // Test sequential search
-    int index3 = sequentialSearch(arr, target1);
-    cout << "SEQUENTIAL SEARCH" << endl;
-    if (index3 >= 0)
-        cout << "Target " << target1 << " was found at location " << index3 << endl;
-    else
-        cout << "Target " << target1 << " was not found, return value is " << index3 << endl;
+        // Measure time for sequential search
+        start = high_resolution_clock::now();
+        sequentialSearch(arr, target1);
+        end = high_resolution_clock::now();
+        duration = duration_cast<microseconds>(end - start);
+        SumSeqS += static_cast<double>(duration.count());
+    }
+
+    cout << "Average Running Time for Recursive Binary Search in microseconds is " << SumRBS / 10 << endl;
+    cout << "Average Running Time for Iterative Binary Search in microseconds is " << SumIBS / 10 << endl;
+    cout << "Average Running Time for Sequential Search in microseconds is " << SumSeqS / 10 << endl;
 
     return 0;
 }
