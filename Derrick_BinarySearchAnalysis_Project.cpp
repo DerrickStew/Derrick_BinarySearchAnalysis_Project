@@ -4,43 +4,42 @@
 
 using namespace std;
 
-// Recursive binary search function
-int recursiveBinarySearch(const vector<int>& arr, int target, int low, int high) {
-    if (low > high) {
-        return -1; // Base case: target not found
-    }
+// recursive binary search
+int recursiveBinarySearch(const vector<int>& arr, int target, int low, int high)
+{
+    if (low <= high)
+    {
+        int mid = low + (high - low) / 2;
 
-    int mid = low + (high - low) / 2;
-
-    if (arr[mid] == target) {
-        return mid; // Base case: target found at mid
+        if (arr[mid] == target)
+            return mid; //target found
+        else if (arr[mid] < target)
+            return recursiveBinarySearch(arr, target, mid + 1, high);
+        else
+            return recursiveBinarySearch(arr, target, low, mid - 1);
     }
-    else if (arr[mid] < target) {
-        return recursiveBinarySearch(arr, target, mid + 1, high); // Search in the right half
-    }
-    else {
-        return recursiveBinarySearch(arr, target, low, mid - 1); // Search in the left half
-    }
+    else
+        return -1; // target not found
 }
 
-// Iterative binary search function
-int iterativeBinarySearch(const vector<int>& arr, int target) {
+
+// iterative binary search
+int iterativeBinarySearch(const vector<int>& arr, int target)
+{
     int low = 0;
     int high = arr.size() - 1;
 
-    while (low <= high) {
+    while (low <= high)
+    {
         int mid = low + (high - low) / 2;
-        if (arr[mid] == target) {
-            return mid; // Target found
-        }
-        else if (arr[mid] < target) {
+        if (arr[mid] == target)
+            return mid; //target found
+        else if (arr[mid] < target)
             low = mid + 1;
-        }
-        else {
+        else
             high = mid - 1;
-        }
     }
-    return -1; // Target not found
+    return -1; //target not found
 }
 
 // Sequential search function
