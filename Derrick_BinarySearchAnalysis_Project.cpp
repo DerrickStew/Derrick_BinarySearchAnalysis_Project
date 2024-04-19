@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <random>
 using namespace std;
 
 // recursive binary search
@@ -59,38 +60,64 @@ int sequentialSearch(const vector<int>& arr, int target)
 // test search functions
 int main()
 {
-    // fill vector
-    vector<int> arr = { 1,3,5,7,2,4,6,8,12 };
-    int target1 = 6;
-    int target2 = 20;
+    mt19937 rng(random_device{}()); // create random number generator
+    uniform_int_distribution<int> distribution(1, 100); // define a range
 
-    // display vector
+    vector<int> arr;
+    for (int i = 0; i < 10; i++)
+    {
+        arr.push_back(distribution(rng)); // fill vector with random numbers
+    }
+    int target = distribution(rng); // generate target value
+
+    // display vector & target
     cout << "VECTOR: ";
     for (int i : arr)
     {
         cout << i << " ";
     }
     cout << endl << "\n";
+    cout << "TARGET: " << target << endl << "\n";
 
     // test recursive binary search
-    int index1 = recursiveBinarySearch(arr, target1, 0, arr.size() - 1); // target in vector
-    int index2 = recursiveBinarySearch(arr, target2, 0, arr.size() - 1); // target not in vector
+    int index1 = recursiveBinarySearch(arr, target, 0, arr.size() - 1); // target in vector
     cout << "RECURSIVE BINARY SEARCH" << endl;
-    cout << "Target " << target1 << " was found at location " << index1 << endl;
-    cout << "Target " << target2 << " was not found, return value is " << index2 << endl << "\n";
+    if (index1 > 0)
+        cout << "Target " << target << " was found at location " << index1 << endl;
+    else
+        cout << "Target " << target << " was not found, return value is " << index1 << endl << "\n";
+    for (int i : arr)
+    {
+        cout << i << " ";
+    }
+    cout << endl << "\n";
+    cout << "TARGET: " << target << endl << "\n";
 
     // test iterative binary search
-    int index3 = iterativeBinarySearch(arr, target1);
-    int index4 = iterativeBinarySearch(arr, target2);
+    int index2 = iterativeBinarySearch(arr, target);
     cout << "ITERATIVE BINARY SEARCH" << endl;
-    cout << "Target " << target1 << " was found at location " << index3 << endl;
-    cout << "Target " << target2 << " was not found, return value is " << index4 << endl << "\n";
+    if (index2 > 0)
+        cout << "Target " << target << " was found at location " << index2 << endl;
+    else
+        cout << "Target " << target << " was not found, return value is " << index2 << endl << "\n";
+    for (int i : arr)
+    {
+        cout << i << " ";
+    }
+    cout << endl << "\n";
+    
 
     // test sequential search
-    int index5 = sequentialSearch(arr, target1);
-    int index6 = sequentialSearch(arr, target2);
+    int index3 = sequentialSearch(arr, target);
     cout << "SEQUENTIAL SEARCH" << endl;
-    cout << "Target " << target1 << " was found at location " << index5 << endl;
-    cout << "Target " << target2 << " was not found, return value is " << index6 << endl;
-
+    if (index3 > 0)
+        cout << "Target " << target << " was found at location " << index3 << endl;
+    else
+        cout << "Target " << target << " was not found, return value is " << index3 << endl;
+    for (int i : arr)
+    {
+        cout << i << " ";
+    }
+    cout << endl << "\n";
+    
 }
